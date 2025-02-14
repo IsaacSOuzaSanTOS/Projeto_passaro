@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Exercício do Pássaro</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+
+<script>
+    const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    scene: {
+        preload: preload,
+        create: create, 
+        update: update
+    }
+};//configura o tamanho da página e o phazer
+
+var game = new Phaser.Game(config); //permite que o phaser funcione
+
+//função para o carregamento de imagens
+function preload(){
+    this.load.image('fundo', 'assets/bg_space.png');//carrega o background
+    this.load.spritesheet('passaro', 'assets/bird-red.png', { 
+        frameWidth: 75,
+        frameHeight: 75
+    });//carrega o sprite do pássaro
+}
+
+//função para colocar as imagens e animações
+function create(){
+    this.add.image(400, 300, 'fundo').setScale(1.2);//coloca a imagem na tela
+    this.player = this.add.sprite(100, 300, 'passaro');//coloca o sprite na tela
+    this.anims.create({
+        key: 'fly',//dá um nome a animação
+        frames: this.anims.generateFrameNumbers('passaro', {start: 0,
+            end: 7 //diz o número de frames que devem ser usados
+        }),//anima o sprite
+        framerepeat: 10,// frames por segundo
+        repeat: -1,//repetir em loop
+        yoyo: true//para a animação voltar para o início, como um yoyo
+    });
+    this.player.anims.play('fly', true)//roda a animação
+}
+
+//cria um função de repetição que é rodada no jogo
+function update(){
+
+    //if para saber quando ativar a ida
+    if (this.player.x === 100) {
+        this.player.setFlip(false, false);
+        this.player.ida = true;
+    }
+
+    //if para ir para a frente
+    if (this.player.x < 700 && this.player.ida === true){
+        console.log('passarinho vai pra frente');//printa o texto no console
+        this.player.x += 5;//dá velocidade para a direits
+        
+        //while para ativar saber quando ativar a descida no eixoY em 300 apenas uma vez
+        while(this.player.y === 300 && !this.player.ativarDescida){
+        this.player.setFlip(false, false); //para não inverter os sprites do pássaro
+        this.player.descida = true;//ativar a descida
+        this.player.ativarDescida = true//para permitir que o while seja ativado apenas uma vez
+
+        }
+        
+        //if para saber quando ativar a subida
+        if(this.player.y === 100){
+            this.player.setFlip(false, false);//para não inverter os sprites do pássaro
+            this.player.descida = true;//para ativar a descida
+        }
+        if (this.player.y < 500 && this.player.descida === true){
+            console.log('passarinho vai pra baixo');//printa o texto no console
+            this.player.y += 5;//dá velocidade para baixo
+        }
+        if (this.player.y === 500) {
+            this.player.setFlip(false, false);//para não inverter os sprites do pássaro
+            this.player.descida = false;//para ativar a subida
+        }
+        if (this.player.y > 100 && this.player.descida === false){
+            console.log('passarinho vai pra cima');//printa o texto no console
+            this.player.y -= 5;//para subir
+        }
+    }
+    if (this.player.x === 700) {
+        this.player.setFlip(true, false);//para inverter os sprites do pássaro
+        this.player.ida = false;//para ativar a volta
+    }
+    if (this.player.x > 100 && this.player.ida === false){
+        console.log('passarinho vai pra trás');//printa o texto no console
+        this.player.x -= 5;//para ir para a esquerda
+        if (this.player.y === 100) {
+            this.player.setFlip(true, false);//para inverter os sprites do pássaro
+            this.player.descida = true;//para ativar a descida
+        }
+        if (this.player.y < 500 && this.player.descida === true){
+            console.log('passarinho vai pra baixo');//printa o texto no console
+            this.player.y += 5;//para ele descer
+        }
+        if (this.player.y === 500) {
+            this.player.setFlip(true, false);//para inverter os sprites do pássaro
+            this.player.descida = false;//para ativar a subida
+        }
+        if (this.player.y > 100 && this.player.descida === false){
+            console.log('passarinho vai pra cima');//printa o texto no console
+            this.player.y -= 5;//para subir
+        }
+    }
+
+}
+</script>
+
+</body>
+</html>
+
+
